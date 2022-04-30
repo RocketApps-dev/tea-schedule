@@ -1,0 +1,95 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserType {
+  ADMIN
+  TEACHER
+  RESPONSIBLES
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum UserLevel {
+  ADMIN
+  TEACHER_MANAGER
+  TEACHER
+  RESPONSIBLES_MANAGER
+  RESPONSIBLES
+}
+
+model StandardRemark {
+  id          String @id
+  name        String
+  description String
+  iconName    String @map("icon_name")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("standard_remarks")
+}
+
+model Users {
+  id       String  @id @default(uuid())
+  name     String
+  email    String  @unique @db.VarChar(180)
+  password String
+  avatar   String?
+
+  level  UserLevel  @default(ADMIN)
+  status UserStatus @default(ACTIVE)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Students {
+  id            String  @id @default(uuid())
+  name          String
+  responsibleId String  @map("responsible_id")
+  email         String  @unique @db.VarChar(180)
+  password      String
+  avatar        String?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("students")
+}
+
+model StudentTeacherBonds {
+  id        String @id @default(uuid())
+  studentId String @map("student_id")
+  teacherId String @map("teacher_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("student_teacher_bonds")
+}
+
+model Schedule {
+  id               String  @id @default(uuid())
+  name             String
+  studentId        String  @map("student_id")
+  teacherId        String  @map("teacher_id")
+  standardRemarkId String? @map("standard_remark_id")
+  description      String
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("schedules")
+}
+
